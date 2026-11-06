@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Clickable prototype of the World Athletics Fan Intelligence Platform: Sponsor Insights and Fan Companion AI agents.">
+<title>Fan Intelligence Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: app shell — top bar with view tabs; Sponsor view = prompts | conversation | reasoning trace; Fan view = phone | workflow + stored data */
+:root {
+  --bg: #F6F8FB;
+  --surface: #FFFFFF;
+  --ink: #14171C;
+  --muted: #5B6470;
+  --line: #D9DEE6;
+  --orange: #EC741F;
+  --orange-ink: #B4520C;
+  --peach: #FDEBDD;
+  --blue: #A6CCF5;
+  --blue-tint: #E8F2FD;
+  --good: #1F7A4D;
+  --good-tint: #E3F3EA;
+  --bad: #B42318;
+  --bad-tint: #FCE8E6;
+  --warn: #8A5A00;
+  --warn-tint: #FFF4D6;
+  --display: "Barlow Condensed", "Arial Narrow", Arial, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", Calibri, Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101318; --surface: #181C23; --ink: #EEF1F5; --muted: #A3ACB8; --line: #2C333D;
+    --orange: #F08A3E; --orange-ink: #F6A86C; --peach: #3A2618; --blue: #3E6A99; --blue-tint: #1A2735;
+    --good: #5FD39A; --good-tint: #15301F; --bad: #FF8A80; --bad-tint: #3A1714; --warn: #F2C35B; --warn-tint: #352A10;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101318; --surface: #181C23; --ink: #EEF1F5; --muted: #A3ACB8; --line: #2C333D;
+  --orange: #F08A3E; --orange-ink: #F6A86C; --peach: #3A2618; --blue: #3E6A99; --blue-tint: #1A2735;
+  --good: #5FD39A; --good-tint: #15301F; --bad: #FF8A80; --bad-tint: #3A1714; --warn: #F2C35B; --warn-tint: #352A10;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.45; }
+.wrap { max-width: 1280px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 32px; }
+header.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 12px; border-bottom: 3px solid var(--orange); }
+.brand { display: flex; flex-direction: column; }
+.brand h1 { font-family: var(--display); font-weight: 700; font-size: 28px; letter-spacing: .02em; margin: 0; text-transform: uppercase; text-wrap: balance; }
+.brand span { color: var(--muted); font-size: 13px; }
+nav.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+nav.tabs button { font: 600 14px var(--body); padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+nav.tabs button[aria-selected="true"] { background: var(--orange); border-color: var(--orange); color: #fff; }
+button:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.note { margin: 12px 0 16px; padding: 8px 12px; background: var(--peach); border-radius: 8px; font-size: 13px; }
+.ph { font-family: var(--mono); font-size: .86em; background: var(--blue-tint); border: 1px dashed var(--blue); padding: 0 4px; border-radius: 4px; white-space: nowrap; }
+.label { font: 600 12px var(--body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 8px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+
+/* Sponsor view */
+.sponsor { display: grid; grid-template-columns: 250px minmax(0, 1fr) 300px; gap: 14px; align-items: start; }
+.prompts { display: flex; flex-direction: column; gap: 8px; }
+.chip { text-align: left; font: 14px var(--body); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.chip:hover { border-color: var(--orange); }
+.chip small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+.thread { display: flex; flex-direction: column; gap: 12px; min-height: 420px; }
+.msg-user { align-self: flex-end; max-width: 85%; background: var(--blue-tint); border: 1px solid var(--blue); border-radius: 12px 12px 2px 12px; padding: 10px 12px; }
+.msg-agent { align-self: stretch; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--surface); }
+.msg-agent h3 { margin: 0 0 6px; font-family: var(--display); font-size: 20px; letter-spacing: .02em; }
+.empty { color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; padding: 24px; text-align: center; }
+.fields { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; font-size: 14px; margin: 8px 0; }
+.fields dt { font-weight: 600; }
+.fields dd { margin: 0; color: var(--muted); }
+.chart { width: 100%; max-width: 420px; height: auto; display: block; margin: 6px 0; }
+.status { display: inline-flex; align-items: center; gap: 6px; font: 600 12px var(--body); padding: 3px 10px; border-radius: 999px; }
+.s-block { background: var(--bad-tint); color: var(--bad); }
+.s-ok { background: var(--good-tint); color: var(--good); }
+.s-warn { background: var(--warn-tint); color: var(--warn); }
+.s-wait { background: var(--blue-tint); color: var(--ink); border: 1px solid var(--blue); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.btn { font: 600 14px var(--body); padding: 8px 14px; border-radius: 8px; border: 1px solid var(--orange); background: var(--orange); color: #fff; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--orange-ink); }
+.btn:disabled { opacity: .5; cursor: default; }
+.composer { display: flex; gap: 8px; margin-top: 12px; }
+.composer input { flex: 1; min-width: 0; font: 15px var(--body); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.draft[contenteditable="true"] { outline: 2px dashed var(--orange); outline-offset: 4px; border-radius: 4px; }
+.approver { margin-top: 12px; border: 2px solid var(--orange); border-radius: 10px; padding: 12px; background: var(--peach); }
+.approver ul { margin: 6px 0; padding-left: 18px; }
+
+/* Reasoning trace */
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.step { display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: start; padding: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); transition: background .2s; }
+.step .n { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font: 700 12px var(--body); background: var(--line); color: var(--ink); }
+.step b { font-size: 14px; }
+.step .tag { font: 500 10.5px var(--mono); margin-left: 6px; padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); }
+.step .log { display: block; font: 12px var(--mono); color: var(--muted); margin-top: 2px; }
+.step.active { background: var(--blue-tint); border-color: var(--blue); }
+.step.active .n { background: var(--blue); }
+.step.done .n { background: var(--orange); color: #fff; }
+.step.blocked { background: var(--bad-tint); border-color: var(--bad); }
+.step.blocked .n { background: var(--bad); color: #fff; }
+.step.partial { background: var(--warn-tint); border-color: var(--warn); }
+.step.partial .n { background: var(--warn); color: #fff; }
+.step.skipped { opacity: .45; }
+.legend { margin-top: 10px; font-size: 12px; color: var(--muted); }
+
+/* Fan view */
+.fan { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 20px; align-items: start; }
+.phone { width: 100%; max-width: 380px; margin: 0 auto; border: 10px solid #1C2128; border-radius: 34px; background: var(--surface); overflow: hidden; display: flex; flex-direction: column; height: 680px; position: relative; }
+.phone .bar { padding: 12px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+.phone .bar strong { white-space: nowrap; font-family: var(--display); font-size: 18px; letter-spacing: .03em; text-transform: uppercase; }
+.phone .bar span { font-size: 11px; color: var(--muted); text-align: right; }
+.fchat { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.fchat .msg-user { max-width: 82%; font-size: 14px; }
+.fchat .msg-agent { font-size: 14px; padding: 10px 12px; }
+.src { display: block; font-size: 11.5px; color: var(--muted); margin-top: 4px; font-style: italic; }
+.ai-note { font-size: 11px; color: var(--muted); text-align: center; }
+.fchips { display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; border-top: 1px solid var(--line); }
+.fchips button { flex: none; font: 13px var(--body); padding: 6px 10px; border-radius: 999px; border: 1px solid var(--orange); background: transparent; color: var(--orange-ink); cursor: pointer; }
+.results { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+.results td { padding: 3px 4px; border-top: 1px solid var(--line); }
+.modal { position: absolute; inset: 0; background: rgba(10, 12, 16, .55); display: grid; place-items: end center; }
+.sheet { background: var(--surface); width: 100%; border-radius: 16px 16px 0 0; padding: 16px; }
+.sheet h4 { margin: 0 0 6px; font-size: 16px; }
+.sheet p { margin: 0 0 10px; font-size: 13.5px; color: var(--muted); }
+.toast { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 999px; font-size: 13px; white-space: nowrap; }
+.side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.prefs { display: flex; flex-wrap: wrap; gap: 6px; }
+.pref { font-size: 13px; padding: 4px 10px; border-radius: 999px; background: var(--peach); border: 1px solid var(--orange); }
+.record { font: 12.5px var(--mono); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; white-space: pre; }
+
+@media (max-width: 1080px) {
+  .sponsor { grid-template-columns: minmax(0, 1fr); }
+  .fan { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Fan Intelligence Platform</h1>
+      <span>World Athletics · clickable prototype for the HashedIn case study</span>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Prototype views">
+      <button id="tab-sponsor" role="tab" aria-selected="true" aria-controls="view-sponsor">Sponsor Insights Agent</button>
+      <button id="tab-fan" role="tab" aria-selected="false" aria-controls="view-fan">Fan Companion Agent</button>
+    </nav>
+  </header>
+  <p class="note"><b>Illustrative prototype.</b> Values in <span class="ph">[brackets]</span> are placeholders filled at run time by approved services. No real World Athletics, sponsor or athlete data is shown, and chart shapes are illustrative.</p>
+
+  <!-- ============ SPONSOR VIEW ============ -->
+  <section id="view-sponsor" role="tabpanel" aria-labelledby="tab-sponsor">
+    <div class="sponsor">
+      <aside class="panel">
+        <p class="label">Try a scenario</p>
+        <div class="prompts">
+          <button class="chip" data-s="compare">Compare fan engagement across our available Diamond League events<small>Normal answer with sources and limits</small></button>
+          <button class="chip" data-s="report">Draft the post-event report for <span class="ph">[Sponsor X]</span> at <span class="ph">[Event]</span><small>Report draft, then human approval</small></button>
+          <button class="chip" data-s="emails">List the emails of fans who clicked <span class="ph">[Sponsor X]</span>'s content<small>Policy engine blocks it</small></button>
+          <button class="chip" data-s="tv">How many people watched the final on <span class="ph">[Broadcaster]</span>?<small>Data not available to the agent</small></button>
+        </div>
+      </aside>
+
+      <main class="panel">
+        <p class="label">Commercial &amp; Digital team workspace</p>
+        <div class="thread" id="thread" aria-live="polite">
+          <div class="empty" id="empty">Pick a scenario on the left, or type a question below. The reasoning trace on the right shows each step the agent takes.</div>
+        </div>
+        <form class="composer" id="composer">
+          <label for="q" class="label" hidden>Ask the Sponsor Insights Agent</label>
+          <input id="q" placeholder="Ask about engagement, events or sponsor reports" autocomplete="off">
+          <button class="btn" type="submit">Ask</button>
+        </form>
+      </main>
+
+      <aside class="panel">
+        <p class="label">Agent reasoning trace</p>
+        <ol class="steps" id="steps"></ol>
+        <p class="legend">Numbers come only from the deterministic metric service. The policy engine runs outside the LLM. Sponsor-facing outputs always need a human approver.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ FAN VIEW ============ -->
+  <section id="view-fan" role="tabpanel" aria-labelledby="tab-fan" hidden>
+    <div class="fan">
+      <div class="phone" id="phone">
+        <div class="bar"><strong>World Athletics+</strong><span>Fan Companion · AI assistant</span></div>
+        <div class="fchat" id="fchat" aria-live="polite">
+          <p class="ai-note">You're chatting with an AI assistant. Answers come from official World Athletics sources.</p>
+          <div class="msg-agent">Hi! Ask me about athletes, events or official results.</div>
+        </div>
+        <div class="fchips">
+          <button data-f="next">When is my favourite athlete competing next?</button>
+          <button data-f="results">Show me the latest official results</button>
+          <button data-f="weekend">What's on this weekend?</button>
+          <button data-f="weather">Will it rain at the stadium?</button>
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="panel">
+          <p class="label">Agent workflow</p>
+          <ol class="steps" id="fsteps"></ol>
+        </div>
+        <div class="panel">
+          <p class="label">Saved preferences (with consent)</p>
+          <div class="prefs" id="prefs"><span style="color:var(--muted);font-size:13px">Nothing saved yet. Preferences are stored only after the fan agrees.</span></div>
+        </div>
+        <div class="panel">
+          <p class="label">Consent record</p>
+          <div class="record" id="record">No consent given yet.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const wait = ms => new Promise(r => setTimeout(r, reduce ? 0 : ms));
+  const ph = t => `<span class="ph">[${t}]</span>`;
+  const $ = s => document.querySelector(s);
+
+  /* ---------- tabs with hash routing ---------- */
+  const views = { sponsor: ["#tab-sponsor", "#view-sponsor"], fan: ["#tab-fan", "#view-fan"] };
+  function show(name) {
+    if (!views[name]) name = "sponsor";
+    for (const [k, [t, v]] of Object.entries(views)) {
+      $(t).setAttribute("aria-selected", String(k === name));
+      $(v).hidden = k !== name;
+    }
+  }
+  $("#tab-sponsor").onclick = () => { location.hash = "sponsor"; show("sponsor"); };
+  $("#tab-fan").onclick = () => { location.hash = "fan"; show("fan"); };
+  window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+  show(location.hash.slice(1));
+
+  /* ---------- sponsor reasoning steps ---------- */
+  const STEPS = [
+    ["Ask", "Human"], ["Understand", "LLM"], ["Select tools", "LLM"], ["Retrieve", "API"],
+    ["Calculate", "Deterministic"], ["Policy check", "Deterministic"], ["Explain & draft", "LLM"], ["Approve", "Human"],
+  ];
+  const stepsEl = $("#steps");
+  function resetSteps(el, list) {
+    el.innerHTML = list.map((s, i) => `<li class="step" data-i="${i}"><span class="n">${i + 1}</span><span><b>${s[0]}</b><span class="tag">${s[1]}</span><span class="log"></span></span></li>`).join("");
+  }
+  resetSteps(stepsEl, STEPS);
+  function setStep(el, i, state, log) {
+    const li = el.querySelector(`[data-i="${i}"]`);
+    li.className = "step " + state;
+    if (log !== undefined) li.querySelector(".log").textContent = log;
+  }
+
+  const thread = $("#thread");
+  let busy = false;
+  function addUser(html) { $("#empty")?.remove(); const d = document.createElement("div"); d.className = "msg-user"; d.innerHTML = html; thread.appendChild(d); }
+  function addAgent(html) { const d = document.createElement("div"); d.className = "msg-agent"; d.innerHTML = html; thread.appendChild(d); d.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" }); return d; }
+
+  const chart = () => `
+    <svg class="chart" viewBox="0 0 420 180" role="img" aria-label="Illustrative bar chart comparing three events">
+      <line x1="40" y1="150" x2="400" y2="150" stroke="var(--line)" stroke-width="1"/>
+      <line x1="40" y1="20" x2="40" y2="150" stroke="var(--line)" stroke-width="1"/>
+      <rect x="80" y="80" width="60" height="70" rx="3" fill="var(--blue)"/>
+      <rect x="190" y="45" width="60" height="105" rx="3" fill="var(--orange)"/>
+      <rect x="300" y="95" width="60" height="55" rx="3" fill="var(--blue)"/>
+      <text x="110" y="168" text-anchor="middle" font-size="12" fill="var(--muted)">Event A</text>
+      <text x="220" y="168" text-anchor="middle" font-size="12" fill="var(--muted)">Event B</text>
+      <text x="330" y="168" text-anchor="middle" font-size="12" fill="var(--muted)">Event C</text>
+      <text x="400" y="14" text-anchor="end" font-size="11" font-style="italic" fill="var(--muted)">illustrative shape · no real values</text>
+    </svg>`;
+
+  const SCEN = {
+    compare: {
+      q: "Compare fan engagement across our available Diamond League events",
+      logs: ["Question received from Commercial user", "Intent: event comparison · metrics: engaged sessions, return visits", "Tools: metrics.query, events.list", "Pulled owned-channel engagement for events with data", "Metric service computed values with shared definitions", "Aggregates only · role: Commercial · passed", "Summary and chart drafted", "Internal answer: no sponsor approval needed"],
+      outcome: "ok",
+      answer: () => `<h3>Engagement by event (owned channels)</h3>
+        <p>${ph("Event B")} shows the highest engaged sessions among events with available data. Return visits are shown only where signed-in data supports them.</p>
+        ${chart()}
+        <dl class="fields">
+          <dt>Metrics used</dt><dd>${ph("engaged sessions")}, ${ph("return visits")} from the approved metric service</dd>
+          <dt>Source &amp; period</dt><dd>${ph("datasets")}, refreshed ${ph("date")}, covering ${ph("period")}</dd>
+          <dt>Limitations</dt><dd>Owned channels only. Broadcaster and ticketing data are not included.</dd>
+        </dl>
+        <span class="status s-ok">✓ Internal answer · policy checks passed</span>`,
+    },
+    report: {
+      q: `Draft the post-event report for ${ph("Sponsor X")} at ${ph("Event")}`,
+      logs: ["Question received from Commercial user", "Intent: sponsor report · template: post-event", "Tools: metrics.query, content.sponsorAssets, report.build", "Pulled engagement and sponsor-tagged content data", "Metric service computed every figure in the template", "Aggregation threshold met · sponsor data segregated · passed", "Report draft written with a source for each figure", "Waiting for a human approver"],
+      outcome: "approve",
+      answer: () => `<h3>Draft: post-event report for ${ph("Sponsor X")}</h3>
+        <div class="draft" id="draft">
+          <p><b>Summary.</b> At ${ph("Event")}, fans on World Athletics channels engaged with ${ph("Sponsor X")} content ${ph("n")} times across ${ph("n")} sessions. ${ph("share")} of engaged fans were returning visitors.</p>
+          <dl class="fields">
+            <dt>Reach (owned)</dt><dd>${ph("value")} · source: metric service, ${ph("date")}</dd>
+            <dt>Engagement depth</dt><dd>${ph("value")} · source: engagement events</dd>
+            <dt>Audience profile</dt><dd>${ph("aggregated segments")} · groups below the minimum size suppressed</dd>
+            <dt>Limitations</dt><dd>Owned channels only; broadcast viewing not included.</dd>
+          </dl>
+        </div>
+        <div class="actions" id="ractions">
+          <button class="btn ghost" id="editDraft">Edit draft</button>
+          <button class="btn" id="sendApproval">Send for approval</button>
+        </div>
+        <p id="rstatus" style="margin:8px 0 0"><span class="status s-wait">Draft · not shared</span></p>`,
+    },
+    emails: {
+      q: `List the emails of fans who clicked ${ph("Sponsor X")}'s content`,
+      logs: ["Question received from Commercial user", "Intent: individual fan contact list", "Tools: metrics.query (individual-level request)", "Not run: request held for policy check", "Not run", "Blocked: individual records cannot be shared with sponsors", "", ""],
+      outcome: "block",
+      answer: () => `<h3>I can't provide this</h3>
+        <p>Individual fans' emails can't be shared or used for sponsor reporting. The policy engine blocks individual-level data for sponsor purposes, and fans haven't consented to it.</p>
+        <p><b>What I can do instead:</b> show the aggregated number of fans who engaged with ${ph("Sponsor X")} content, by country or age band, where each group meets the minimum size.</p>
+        <span class="status s-block">⛔ Blocked by policy engine · attempt logged for audit</span>`,
+    },
+    tv: {
+      q: `How many people watched the final on ${ph("Broadcaster")}?`,
+      logs: ["Question received from Commercial user", "Intent: broadcast viewership", "Tools: partner.feeds (broadcaster)", "No authorised broadcaster feed for this event", "Nothing to calculate", "Passed", "Explained the gap and offered an alternative", "Internal answer: no sponsor approval needed"],
+      outcome: "partial",
+      answer: () => `<h3>That data isn't available to me</h3>
+        <p>Viewing figures are held by ${ph("Broadcaster")} and aren't shared with this platform. I won't estimate them.</p>
+        <p><b>Available instead:</b> engagement with the final on World Athletics' own website, app and World Athletics+. Broadcaster figures can be added later if a data-sharing agreement is in place.</p>
+        <span class="status s-warn">⚠ Partial · partner data not connected</span>`,
+    },
+  };
+
+  async function run(key) {
+    if (busy) return;
+    busy = true;
+    const sc = SCEN[key];
+    resetSteps(stepsEl, STEPS);
+    addUser(sc.q);
+    for (let i = 0; i < 8; i++) {
+      if (sc.outcome === "block" && i > 5) { setStep(stepsEl, i, "skipped", "Not reached"); continue; }
+      if (sc.outcome === "approve" && i === 7) { setStep(stepsEl, i, "active", sc.logs[i]); break; }
+      setStep(stepsEl, i, "active", sc.logs[i]);
+      await wait(420);
+      let st = "done";
+      if (sc.outcome === "block" && i === 5) st = "blocked";
+      if (sc.outcome === "block" && (i === 3 || i === 4)) st = "skipped";
+      if (sc.outcome === "partial" && i === 3) st = "partial";
+      setStep(stepsEl, i, st);
+    }
+    addAgent(sc.answer());
+    if (key === "report") wireApproval();
+    busy = false;
+  }
+
+  function wireApproval() {
+    const draft = $("#draft");
+    $("#editDraft").onclick = e => {
+      const on = draft.getAttribute("contenteditable") === "true";
+      draft.setAttribute("contenteditable", String(!on));
+      e.target.textContent = on ? "Edit draft" : "Done editing";
+      if (!on) draft.focus();
+    };
+    $("#sendApproval").onclick = () => {
+      draft.setAttribute("contenteditable", "false");
+      $("#ractions").querySelectorAll("button").forEach(b => (b.disabled = true));
+      $("#rstatus").innerHTML = `<span class="status s-wait">Awaiting approval</span>`;
+      const box = document.createElement("div");
+      box.className = "approver";
+      box.innerHTML = `<b>Approver view · ${ph("Reviewer")}</b>
+        <ul><li>Every figure has a source ✓</li><li>All groups meet the minimum size ✓</li><li>Limitations are stated ✓</li></ul>
+        <div class="actions"><button class="btn" id="approve">Approve</button><button class="btn ghost" id="changes">Request changes</button></div>`;
+      $("#rstatus").after(box);
+      box.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+      $("#approve").onclick = () => {
+        setStep(stepsEl, 7, "done", "Approved by reviewer · logged");
+        box.innerHTML = `<b>Approved.</b> Ready to share with ${ph("Sponsor X")}. Approval recorded in the audit log.`;
+        $("#rstatus").innerHTML = `<span class="status s-ok">✓ Approved</span>`;
+      };
+      $("#changes").onclick = () => {
+        setStep(stepsEl, 7, "partial", "Returned to analyst with comments");
+        box.innerHTML = `<b>Returned for changes.</b> The draft goes back to the Commercial user; nothing has been shared.`;
+        $("#rstatus").innerHTML = `<span class="status s-warn">Changes requested</span>`;
+        $("#ractions").querySelectorAll("button").forEach(b => (b.disabled = false));
+      };
+    };
+  }
+
+  document.querySelectorAll("[data-s]").forEach(b => (b.onclick = () => run(b.dataset.s)));
+  $("#composer").addEventListener("submit", e => {
+    e.preventDefault();
+    const v = $("#q").value.trim().toLowerCase();
+    if (!v || busy) return;
+    $("#q").value = "";
+    let key = null;
+    if (/email|contact|name|phone|individual/.test(v)) key = "emails";
+    else if (/watch|viewer|tv|broadcast|viewing/.test(v)) key = "tv";
+    else if (/report|draft|sponsor/.test(v)) key = "report";
+    else if (/compare|engagement|event|diamond|fans/.test(v)) key = "compare";
+    if (key) return run(key);
+    addUser(v.replace(/[<>&]/g, ""));
+    addAgent(`<p>In this prototype I can answer the four sample scenarios. Try asking about engagement, a sponsor report, fan contact details or broadcast viewing.</p>`);
+  });
+
+  /* ---------- fan companion ---------- */
+  const FSTEPS = [["Fan asks", "Human"], ["Identify intent", "LLM"], ["Retrieve official data", "API"], ["Apply preferences & permissions", "Deterministic"], ["Grounded answer with source", "LLM"], ["Optional action", "Human"]];
+  const fsteps = $("#fsteps");
+  resetSteps(fsteps, FSTEPS);
+  const fchat = $("#fchat");
+  const prefs = new Set();
+  let consented = false, fbusy = false;
+  const fUser = t => { const d = document.createElement("div"); d.className = "msg-user"; d.innerHTML = t; fchat.appendChild(d); fchat.scrollTop = fchat.scrollHeight; };
+  const fAgent = h => { const d = document.createElement("div"); d.className = "msg-agent"; d.innerHTML = h; fchat.appendChild(d); fchat.scrollTop = fchat.scrollHeight; return d; };
+
+  const FAN = {
+    next: {
+      q: "When is my favourite athlete competing next?",
+      logs: ["Question received", "Intent: athlete schedule", "schedule.api + entries.api", "No saved favourite yet → ask, or use saved follows", "Answer cites official schedule", "Offer follow / reminder"],
+      a: () => `${ph("Athlete")} is entered in the ${ph("event")} at ${ph("meeting")} on ${ph("date")}, ${ph("local time")}.
+        <span class="src">Source: official schedule, updated ${ph("time")}</span>
+        <div class="actions"><button class="btn" data-follow>Follow athlete</button><button class="btn ghost" data-remind>Set reminder</button></div>`,
+    },
+    results: {
+      q: "Show me the latest official results",
+      logs: ["Question received", "Intent: latest results", "results.api", "No personal data needed", "Results table with timestamp", "—"],
+      a: () => `<b>${ph("Event")} · official results</b>
+        <table class="results"><tr><td>1</td><td>${ph("Athlete")}</td><td>${ph("mark")}</td></tr><tr><td>2</td><td>${ph("Athlete")}</td><td>${ph("mark")}</td></tr><tr><td>3</td><td>${ph("Athlete")}</td><td>${ph("mark")}</td></tr></table>
+        <span class="src">Source: official results, updated ${ph("time")}</span>`,
+    },
+    weekend: {
+      q: "What's on this weekend?",
+      logs: ["Question received", "Intent: event discovery", "calendar.api", "Fan's time zone applied (no profile needed)", "List with where to watch", "Offer reminders"],
+      a: () => `This weekend: ${ph("meeting list from the official calendar")}, shown in your local time.
+        <span class="src">Source: official calendar</span>
+        <div class="actions"><button class="btn ghost" data-remind>Remind me</button></div>`,
+    },
+    weather: {
+      q: "Will it rain at the stadium?",
+      logs: ["Question received", "Intent: weather (outside scope)", "No approved weather source", "—", "Says it can't answer; no guess", "—"],
+      partial: true,
+      a: () => `I don't have weather information, so I can't answer that. Check a local forecast for ${ph("venue city")}. I can tell you the event schedule if that helps.`,
+    },
+  };
+
+  function toast(msg) {
+    const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+    $("#phone").appendChild(t); setTimeout(() => t.remove(), reduce ? 1500 : 2200);
+  }
+  function renderPrefs() {
+    $("#prefs").innerHTML = prefs.size ? [...prefs].map(p => `<span class="pref">${p}</span>`).join("") : `<span style="color:var(--muted);font-size:13px">Nothing saved yet. Preferences are stored only after the fan agrees.</span>`;
+  }
+  function askConsent(what, done) {
+    if (consented) return done();
+    const m = document.createElement("div");
+    m.className = "modal";
+    m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ch">
+      <h4 id="ch">Personalise your updates?</h4>
+      <p>World Athletics would save that you ${what} to send relevant alerts and content. You can change this anytime in your World Athletics+ settings.</p>
+      <div class="actions"><button class="btn" id="allow">Allow</button><button class="btn ghost" id="deny">Not now</button></div></div>`;
+    $("#phone").appendChild(m);
+    $("#allow").focus();
+    $("#allow").onclick = () => {
+      consented = true; m.remove();
+      $("#record").textContent = `purpose:   personalised alerts & content\nlawful basis: consent\nscope:     athlete follows, reminders\ngiven:     [timestamp]\nchannel:   World Athletics+ · Fan Companion\nwithdraw:  settings › privacy`;
+      done();
+    };
+    $("#deny").onclick = () => { m.remove(); toast("Nothing saved"); setStep(fsteps, 5, "skipped", "Fan declined · nothing stored"); };
+  }
+
+  async function frun(key) {
+    if (fbusy) return;
+    fbusy = true;
+    const sc = FAN[key];
+    resetSteps(fsteps, FSTEPS);
+    fUser(sc.q);
+    for (let i = 0; i < 5; i++) {
+      setStep(fsteps, i, "active", sc.logs[i]);
+      await wait(320);
+      setStep(fsteps, i, sc.partial && i === 2 ? "partial" : "done");
+    }
+    setStep(fsteps, 5, "", sc.logs[5]);
+    const d = fAgent(sc.a());
+    d.querySelectorAll("[data-follow]").forEach(b => (b.onclick = () => askConsent("follow this athlete", () => {
+      prefs.add("Follows: [Athlete]"); renderPrefs(); setStep(fsteps, 5, "done", "Follow saved with consent"); b.disabled = true; b.textContent = "Following"; toast("Following [Athlete]");
+    })));
+    d.querySelectorAll("[data-remind]").forEach(b => (b.onclick = () => askConsent("want event reminders", () => {
+      prefs.add("Reminders: on"); renderPrefs(); setStep(fsteps, 5, "done", "Reminder set with consent"); b.disabled = true; b.textContent = "Reminder set"; toast("Reminder set");
+    })));
+    fbusy = false;
+  }
+  document.querySelectorAll("[data-f]").forEach(b => (b.onclick = () => frun(b.dataset.f)));
+})();
+</script>
+
+</body>
+</html>
