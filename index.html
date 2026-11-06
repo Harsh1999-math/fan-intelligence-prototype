@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Clickable prototype of the World Athletics Fan Intelligence Platform: Sponsor Insights and Fan Companion AI agents.">
+<meta name="description" content="Clickable prototype of the World Athletics Fan Intelligence Platform with synthetic demo data.">
 <title>Fan Intelligence Prototype</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -139,6 +139,28 @@ button:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px so
   .fan { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* Data view */
+.dgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.kpi b { display: block; font-family: var(--display); font-size: 26px; color: var(--orange-ink); font-variant-numeric: tabular-nums; }
+.kpi span { font-size: 12.5px; color: var(--muted); }
+.dsec { margin-bottom: 16px; }
+.dsec header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.dsec h2 { margin: 0; font-family: var(--display); font-size: 21px; letter-spacing: .02em; }
+.dsec p.sub { margin: 0 0 6px; font-size: 13px; color: var(--muted); }
+.tscroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table.dt { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+table.dt th { text-align: left; background: var(--peach); padding: 6px 8px; font-weight: 700; white-space: nowrap; position: sticky; top: 0; }
+table.dt td { padding: 5px 8px; border-top: 1px solid var(--line); white-space: nowrap; }
+table.dt td.num, table.dt th.num { text-align: right; }
+.small-btn { font: 600 12.5px var(--body); padding: 5px 10px; border-radius: 6px; border: 1px solid var(--orange); background: transparent; color: var(--orange-ink); cursor: pointer; }
+.mini { width: 100%; border-collapse: collapse; font-size: 13px; margin: 6px 0; font-variant-numeric: tabular-nums; }
+.mini th { text-align: left; font-weight: 600; color: var(--muted); padding: 3px 6px; border-bottom: 1px solid var(--line); }
+.mini td { padding: 3px 6px; border-bottom: 1px solid var(--line); }
+.mini td.num, .mini th.num { text-align: right; }
+.sup { color: var(--muted); font-style: italic; }
+@media (max-width: 760px) { .dgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 </style>
 </head>
 <body>
@@ -152,9 +174,10 @@ button:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px so
     <nav class="tabs" role="tablist" aria-label="Prototype views">
       <button id="tab-sponsor" role="tab" aria-selected="true" aria-controls="view-sponsor">Sponsor Insights Agent</button>
       <button id="tab-fan" role="tab" aria-selected="false" aria-controls="view-fan">Fan Companion Agent</button>
+      <button id="tab-data" role="tab" aria-selected="false" aria-controls="view-data">Synthetic data</button>
     </nav>
   </header>
-  <p class="note"><b>Illustrative prototype.</b> Values in <span class="ph">[brackets]</span> are placeholders filled at run time by approved services. No real World Athletics, sponsor or athlete data is shown, and chart shapes are illustrative.</p>
+  <p class="note"><b>Synthetic demo data.</b> Every number, fan, athlete, sponsor and result here is invented and generated in your browser from a fixed seed. Diamond League city names are real; all people and brands are fictional. Nothing reflects real World Athletics data.</p>
 
   <!-- ============ SPONSOR VIEW ============ -->
   <section id="view-sponsor" role="tabpanel" aria-labelledby="tab-sponsor">
@@ -162,11 +185,12 @@ button:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px so
       <aside class="panel">
         <p class="label">Try a scenario</p>
         <div class="prompts">
-          <button class="chip" data-s="compare">Compare fan engagement across our available Diamond League events<small>Normal answer with sources and limits</small></button>
-          <button class="chip" data-s="report">Draft the post-event report for <span class="ph">[Sponsor X]</span> at <span class="ph">[Event]</span><small>Report draft, then human approval</small></button>
-          <button class="chip" data-s="emails">List the emails of fans who clicked <span class="ph">[Sponsor X]</span>'s content<small>Policy engine blocks it</small></button>
-          <button class="chip" data-s="tv">How many people watched the final on <span class="ph">[Broadcaster]</span>?<small>Data not available to the agent</small></button>
+          <button class="chip" data-s="compare">Compare fan engagement across our Diamond League meetings this season<small>Answer computed from the data, with sources and limits</small></button>
+          <button class="chip" data-s="report">Draft the post-event report for Aster Sports at Zurich<small>Report draft, then human approval</small></button>
+          <button class="chip" data-s="emails">List the emails of fans who clicked Aster Sports content in Zurich<small>Policy engine blocks it</small></button>
+          <button class="chip" data-s="tv">How many people watched Zurich on TV?<small>Data not available to the agent</small></button>
         </div>
+        <p class="legend">You can also type: try "report for Northwind Telecom at Doha" or "compare engagement".</p>
       </aside>
 
       <main class="panel">
@@ -176,7 +200,7 @@ button:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px so
         </div>
         <form class="composer" id="composer">
           <label for="q" class="label" hidden>Ask the Sponsor Insights Agent</label>
-          <input id="q" placeholder="Ask about engagement, events or sponsor reports" autocomplete="off">
+          <input id="q" placeholder="Ask about engagement, meetings or sponsor reports" autocomplete="off">
           <button class="btn" type="submit">Ask</button>
         </form>
       </main>
@@ -195,13 +219,13 @@ button:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px so
       <div class="phone" id="phone">
         <div class="bar"><strong>World Athletics+</strong><span>Fan Companion · AI assistant</span></div>
         <div class="fchat" id="fchat" aria-live="polite">
-          <p class="ai-note">You're chatting with an AI assistant. Answers come from official World Athletics sources.</p>
-          <div class="msg-agent">Hi! Ask me about athletes, events or official results.</div>
+          <p class="ai-note">You're chatting with an AI assistant. Answers come from official World Athletics sources (synthetic in this demo).</p>
+          <div class="msg-agent">Hi! Ask me about athletes, meetings or official results.</div>
         </div>
         <div class="fchips">
-          <button data-f="next">When is my favourite athlete competing next?</button>
-          <button data-f="results">Show me the latest official results</button>
-          <button data-f="weekend">What's on this weekend?</button>
+          <button data-f="next">When is Mara Okonjo racing next?</button>
+          <button data-f="results">Show the latest official results</button>
+          <button data-f="weekend">What's on at the next meeting?</button>
           <button data-f="weather">Will it rain at the stadium?</button>
         </div>
       </div>
@@ -213,14 +237,20 @@ button:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px so
         </div>
         <div class="panel">
           <p class="label">Saved preferences (with consent)</p>
-          <div class="prefs" id="prefs"><span style="color:var(--muted);font-size:13px">Nothing saved yet. Preferences are stored only after the fan agrees.</span></div>
+          <div class="prefs" id="prefs"></div>
         </div>
         <div class="panel">
-          <p class="label">Consent record</p>
+          <p class="label">Consent record · signed in as synthetic fan F-10482</p>
           <div class="record" id="record">No consent given yet.</div>
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- ============ DATA VIEW ============ -->
+  <section id="view-data" role="tabpanel" aria-labelledby="tab-data" hidden>
+    <div class="dgrid" id="kpis"></div>
+    <div id="dtables"></div>
   </section>
 </div>
 
@@ -228,116 +258,242 @@ button:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px so
 (() => {
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const wait = ms => new Promise(r => setTimeout(r, reduce ? 0 : ms));
-  const ph = t => `<span class="ph">[${t}]</span>`;
   const $ = s => document.querySelector(s);
+  const fmt = n => Math.round(n).toLocaleString("en-US");
+  const pct = x => (x * 100).toFixed(1) + "%";
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-  /* ---------- tabs with hash routing ---------- */
-  const views = { sponsor: ["#tab-sponsor", "#view-sponsor"], fan: ["#tab-fan", "#view-fan"] };
-  function show(name) {
-    if (!views[name]) name = "sponsor";
-    for (const [k, [t, v]] of Object.entries(views)) {
-      $(t).setAttribute("aria-selected", String(k === name));
-      $(v).hidden = k !== name;
-    }
-  }
-  $("#tab-sponsor").onclick = () => { location.hash = "sponsor"; show("sponsor"); };
-  $("#tab-fan").onclick = () => { location.hash = "fan"; show("fan"); };
-  window.addEventListener("hashchange", () => show(location.hash.slice(1)));
-  show(location.hash.slice(1));
+  /* =====================================================================
+     SYNTHETIC DATA (seeded, deterministic)
+     ===================================================================== */
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  const R = mulberry32(2026);
+  const pick = (arr, w) => { let r = R() * w.reduce((a, b) => a + b, 0); for (let i = 0; i < arr.length; i++) { r -= w[i]; if (r < 0) return arr[i]; } return arr[arr.length - 1]; };
 
-  /* ---------- sponsor reasoning steps ---------- */
-  const STEPS = [
-    ["Ask", "Human"], ["Understand", "LLM"], ["Select tools", "LLM"], ["Retrieve", "API"],
-    ["Calculate", "Deterministic"], ["Policy check", "Deterministic"], ["Explain & draft", "LLM"], ["Approve", "Human"],
+  const EVENTS = [
+    { id: "DOH", city: "Doha", home: "QAT", anon: 212400, done: true },
+    { id: "ROM", city: "Rome", home: "ITA", anon: 268900, done: true },
+    { id: "OSL", city: "Oslo", home: "NOR", anon: 241300, done: true },
+    { id: "ZUR", city: "Zurich", home: "SUI", anon: 305700, done: true },
+    { id: "BRU", city: "Brussels", home: "BEL", anon: 0, done: false },
   ];
-  const stepsEl = $("#steps");
-  function resetSteps(el, list) {
-    el.innerHTML = list.map((s, i) => `<li class="step" data-i="${i}"><span class="n">${i + 1}</span><span><b>${s[0]}</b><span class="tag">${s[1]}</span><span class="log"></span></span></li>`).join("");
+  const DONE = EVENTS.filter(e => e.done);
+  const EV = Object.fromEntries(EVENTS.map(e => [e.id, e]));
+  const SPONSORS = [
+    { id: "AST", name: "Aster Sports", cat: "Sportswear", events: ["DOH", "ROM", "OSL", "ZUR", "BRU"], rate: 0.34 },
+    { id: "NWT", name: "Northwind Telecom", cat: "Telecoms", events: ["DOH", "ZUR", "BRU"], rate: 0.2 },
+    { id: "LUM", name: "Lumen Watches", cat: "Timing partner", events: ["ROM", "OSL", "ZUR", "BRU"], rate: 0.24 },
+  ];
+  const SP = Object.fromEntries(SPONSORS.map(s => [s.id, s]));
+  const COUNTRIES = ["GBR", "USA", "KEN", "GER", "IND", "FRA", "ITA", "JPN", "NOR", "SUI", "QAT", "BEL", "BRA", "ESP", "AUS", "ETH", "JAM", "NED"];
+  const CW = [12, 11, 8, 8, 7, 6, 6, 5, 4, 4, 3, 3, 4, 4, 3, 3, 3, 4];
+  const AGES = ["18–24", "25–34", "35–44", "45–54", "55+"];
+  const CHANNELS = ["World Athletics+ web", "World Athletics app", "Road race registration"];
+  const DISC = ["Sprints", "Middle distance", "Long distance", "Hurdles", "Jumps", "Throws"];
+  const MIN_GROUP = 50;
+
+  const FANS = [];
+  for (let i = 0; i < 12000; i++) {
+    const f = {
+      id: "F-" + (10000 + i), country: pick(COUNTRIES, CW), age: pick(AGES, [22, 31, 21, 15, 11]),
+      channel: pick(CHANNELS, [50, 35, 15]), disc: DISC[Math.floor(R() * DISC.length)],
+      analytics: R() < 0.86, personal: R() < 0.58, eng: {},
+    };
+    for (const e of DONE) {
+      const p = 0.3 + (f.country === e.home ? 0.35 : 0) + (f.channel === "World Athletics app" ? 0.08 : 0);
+      if (R() < p) {
+        const rec = { sessions: 1 + Math.floor(R() * 4), minutes: Math.round(4 + R() * 38), clicks: {} };
+        for (const s of SPONSORS) if (s.events.includes(e.id) && R() < s.rate) rec.clicks[s.id] = 1 + Math.floor(R() * 3);
+        f.eng[e.id] = rec;
+      }
+    }
+    FANS.push(f);
   }
-  resetSteps(stepsEl, STEPS);
-  function setStep(el, i, state, log) {
-    const li = el.querySelector(`[data-i="${i}"]`);
-    li.className = "step " + state;
-    if (log !== undefined) li.querySelector(".log").textContent = log;
-  }
+  const CONSENTED = FANS.filter(f => f.analytics);
 
-  const thread = $("#thread");
-  let busy = false;
-  function addUser(html) { $("#empty")?.remove(); const d = document.createElement("div"); d.className = "msg-user"; d.innerHTML = html; thread.appendChild(d); }
-  function addAgent(html) { const d = document.createElement("div"); d.className = "msg-agent"; d.innerHTML = html; thread.appendChild(d); d.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" }); return d; }
+  const ATHLETES = [
+    { id: "A1", name: "Mara Okonjo", nat: "KEN", disc: "1500m (W)" },
+    { id: "A2", name: "Lukas Brandt", nat: "GER", disc: "Pole vault (M)" },
+    { id: "A3", name: "Inês Carvalho", nat: "POR", disc: "400m hurdles (W)" },
+    { id: "A4", name: "Kofi Mensah", nat: "GHA", disc: "100m (M)" },
+    { id: "A5", name: "Aiko Moriyama", nat: "JPN", disc: "5000m (W)" },
+    { id: "A6", name: "Daniel Reyes", nat: "USA", disc: "200m (M)" },
+  ];
+  const BRU_PROGRAMME = [
+    ["19:40", "Pole vault (M)", "Lukas Brandt"], ["20:18", "400m hurdles (W)", "Inês Carvalho"], ["20:35", "200m (M)", "Daniel Reyes"],
+    ["20:52", "1500m (W)", "Mara Okonjo"], ["21:05", "5000m (W)", "Aiko Moriyama"], ["21:41", "100m (M)", "Kofi Mensah"],
+  ];
+  const ZUR_1500W = [
+    [1, "Mara Okonjo", "KEN", "3:54.81"], [2, "Hanna Lindqvist", "SWE", "3:55.40"], [3, "Priya Ramanathan", "IND", "3:56.12"],
+    [4, "Chloé Marchetti", "FRA", "3:56.77"], [5, "Selam Haile-Mariam", "ETH", "3:57.05"],
+  ];
 
-  const chart = () => `
-    <svg class="chart" viewBox="0 0 420 180" role="img" aria-label="Illustrative bar chart comparing three events">
-      <line x1="40" y1="150" x2="400" y2="150" stroke="var(--line)" stroke-width="1"/>
-      <line x1="40" y1="20" x2="40" y2="150" stroke="var(--line)" stroke-width="1"/>
-      <rect x="80" y="80" width="60" height="70" rx="3" fill="var(--blue)"/>
-      <rect x="190" y="45" width="60" height="105" rx="3" fill="var(--orange)"/>
-      <rect x="300" y="95" width="60" height="55" rx="3" fill="var(--blue)"/>
-      <text x="110" y="168" text-anchor="middle" font-size="12" fill="var(--muted)">Event A</text>
-      <text x="220" y="168" text-anchor="middle" font-size="12" fill="var(--muted)">Event B</text>
-      <text x="330" y="168" text-anchor="middle" font-size="12" fill="var(--muted)">Event C</text>
-      <text x="400" y="14" text-anchor="end" font-size="11" font-style="italic" fill="var(--muted)">illustrative shape · no real values</text>
-    </svg>`;
-
-  const SCEN = {
-    compare: {
-      q: "Compare fan engagement across our available Diamond League events",
-      logs: ["Question received from Commercial user", "Intent: event comparison · metrics: engaged sessions, return visits", "Tools: metrics.query, events.list", "Pulled owned-channel engagement for events with data", "Metric service computed values with shared definitions", "Aggregates only · role: Commercial · passed", "Summary and chart drafted", "Internal answer: no sponsor approval needed"],
-      outcome: "ok",
-      answer: () => `<h3>Engagement by event (owned channels)</h3>
-        <p>${ph("Event B")} shows the highest engaged sessions among events with available data. Return visits are shown only where signed-in data supports them.</p>
-        ${chart()}
-        <dl class="fields">
-          <dt>Metrics used</dt><dd>${ph("engaged sessions")}, ${ph("return visits")} from the approved metric service</dd>
-          <dt>Source &amp; period</dt><dd>${ph("datasets")}, refreshed ${ph("date")}, covering ${ph("period")}</dd>
-          <dt>Limitations</dt><dd>Owned channels only. Broadcaster and ticketing data are not included.</dd>
-        </dl>
-        <span class="status s-ok">✓ Internal answer · policy checks passed</span>`,
+  /* =====================================================================
+     METRIC SERVICE (deterministic) + POLICY ENGINE
+     ===================================================================== */
+  const metrics = {
+    event(id) {
+      const fans = CONSENTED.filter(f => f.eng[id]);
+      const signedSessions = fans.reduce((a, f) => a + f.eng[id].sessions, 0);
+      const returning = fans.filter(f => Object.keys(f.eng).length >= 2).length;
+      const minutes = fans.reduce((a, f) => a + f.eng[id].minutes, 0);
+      return { id, city: EV[id].city, owned: EV[id].anon + signedSessions, signedSessions, knownFans: fans.length,
+        returnShare: fans.length ? returning / fans.length : 0, avgMinutes: fans.length ? minutes / fans.length : 0 };
     },
-    report: {
-      q: `Draft the post-event report for ${ph("Sponsor X")} at ${ph("Event")}`,
-      logs: ["Question received from Commercial user", "Intent: sponsor report · template: post-event", "Tools: metrics.query, content.sponsorAssets, report.build", "Pulled engagement and sponsor-tagged content data", "Metric service computed every figure in the template", "Aggregation threshold met · sponsor data segregated · passed", "Report draft written with a source for each figure", "Waiting for a human approver"],
-      outcome: "approve",
-      answer: () => `<h3>Draft: post-event report for ${ph("Sponsor X")}</h3>
-        <div class="draft" id="draft">
-          <p><b>Summary.</b> At ${ph("Event")}, fans on World Athletics channels engaged with ${ph("Sponsor X")} content ${ph("n")} times across ${ph("n")} sessions. ${ph("share")} of engaged fans were returning visitors.</p>
-          <dl class="fields">
-            <dt>Reach (owned)</dt><dd>${ph("value")} · source: metric service, ${ph("date")}</dd>
-            <dt>Engagement depth</dt><dd>${ph("value")} · source: engagement events</dd>
-            <dt>Audience profile</dt><dd>${ph("aggregated segments")} · groups below the minimum size suppressed</dd>
-            <dt>Limitations</dt><dd>Owned channels only; broadcast viewing not included.</dd>
-          </dl>
-        </div>
-        <div class="actions" id="ractions">
-          <button class="btn ghost" id="editDraft">Edit draft</button>
-          <button class="btn" id="sendApproval">Send for approval</button>
-        </div>
-        <p id="rstatus" style="margin:8px 0 0"><span class="status s-wait">Draft · not shared</span></p>`,
+    sponsor(sid, eid) {
+      const fans = CONSENTED.filter(f => f.eng[eid] && f.eng[eid].clicks[sid]);
+      const engaged = CONSENTED.filter(f => f.eng[eid]).length;
+      const interactions = fans.reduce((a, f) => a + f.eng[eid].clicks[sid], 0);
+      const returning = fans.filter(f => Object.keys(f.eng).length >= 2).length;
+      const group = key => {
+        const m = {}; fans.forEach(f => (m[f[key]] = (m[f[key]] || 0) + 1));
+        const shown = Object.entries(m).filter(([, n]) => n >= MIN_GROUP).sort((a, b) => b[1] - a[1]);
+        const hidden = Object.entries(m).filter(([, n]) => n < MIN_GROUP);
+        return { shown, hiddenGroups: hidden.length, hiddenFans: hidden.reduce((a, [, n]) => a + n, 0) };
+      };
+      return { uniq: fans.length, interactions, reachShare: engaged ? fans.length / engaged : 0, returnShare: fans.length ? returning / fans.length : 0,
+        byCountry: group("country"), byAge: group("age") };
     },
-    emails: {
-      q: `List the emails of fans who clicked ${ph("Sponsor X")}'s content`,
-      logs: ["Question received from Commercial user", "Intent: individual fan contact list", "Tools: metrics.query (individual-level request)", "Not run: request held for policy check", "Not run", "Blocked: individual records cannot be shared with sponsors", "", ""],
-      outcome: "block",
-      answer: () => `<h3>I can't provide this</h3>
-        <p>Individual fans' emails can't be shared or used for sponsor reporting. The policy engine blocks individual-level data for sponsor purposes, and fans haven't consented to it.</p>
-        <p><b>What I can do instead:</b> show the aggregated number of fans who engaged with ${ph("Sponsor X")} content, by country or age band, where each group meets the minimum size.</p>
-        <span class="status s-block">⛔ Blocked by policy engine · attempt logged for audit</span>`,
-    },
-    tv: {
-      q: `How many people watched the final on ${ph("Broadcaster")}?`,
-      logs: ["Question received from Commercial user", "Intent: broadcast viewership", "Tools: partner.feeds (broadcaster)", "No authorised broadcaster feed for this event", "Nothing to calculate", "Passed", "Explained the gap and offered an alternative", "Internal answer: no sponsor approval needed"],
-      outcome: "partial",
-      answer: () => `<h3>That data isn't available to me</h3>
-        <p>Viewing figures are held by ${ph("Broadcaster")} and aren't shared with this platform. I won't estimate them.</p>
-        <p><b>Available instead:</b> engagement with the final on World Athletics' own website, app and World Athletics+. Broadcaster figures can be added later if a data-sharing agreement is in place.</p>
-        <span class="status s-warn">⚠ Partial · partner data not connected</span>`,
+    sponsorAvg(sid, exclude) {
+      const evs = SP[sid].events.filter(e => EV[e].done && e !== exclude);
+      if (!evs.length) return null;
+      return evs.reduce((a, e) => a + metrics.sponsor(sid, e).uniq, 0) / evs.length;
     },
   };
 
-  async function run(key) {
+  /* =====================================================================
+     TABS
+     ===================================================================== */
+  const views = { sponsor: ["#tab-sponsor", "#view-sponsor"], fan: ["#tab-fan", "#view-fan"], data: ["#tab-data", "#view-data"] };
+  function show(name) {
+    if (!views[name]) name = "sponsor";
+    for (const [k, [t, v]] of Object.entries(views)) { $(t).setAttribute("aria-selected", String(k === name)); $(v).hidden = k !== name; }
+  }
+  for (const k of Object.keys(views)) $(views[k][0]).onclick = () => { location.hash = k; show(k); };
+  window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+  show(location.hash.slice(1));
+
+  /* =====================================================================
+     SPONSOR INSIGHTS AGENT
+     ===================================================================== */
+  const STEPS = [["Ask", "Human"], ["Understand", "LLM"], ["Select tools", "LLM"], ["Retrieve", "API"], ["Calculate", "Deterministic"], ["Policy check", "Deterministic"], ["Explain & draft", "LLM"], ["Approve", "Human"]];
+  const stepsEl = $("#steps");
+  function resetSteps(el, list) { el.innerHTML = list.map((s, i) => `<li class="step" data-i="${i}"><span class="n">${i + 1}</span><span><b>${s[0]}</b><span class="tag">${s[1]}</span><span class="log"></span></span></li>`).join(""); }
+  resetSteps(stepsEl, STEPS);
+  function setStep(el, i, state, log) { const li = el.querySelector(`[data-i="${i}"]`); li.className = "step " + state; if (log !== undefined) li.querySelector(".log").textContent = log; }
+
+  const thread = $("#thread");
+  let busy = false;
+  function addUser(t) { $("#empty")?.remove(); const d = document.createElement("div"); d.className = "msg-user"; d.textContent = t; thread.appendChild(d); }
+  function addAgent(html) { const d = document.createElement("div"); d.className = "msg-agent"; d.innerHTML = html; thread.appendChild(d); d.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" }); return d; }
+
+  function barChart(rows, key, label) {
+    const max = Math.max(...rows.map(r => r[key])); const top = Math.ceil(max / 100000) * 100000;
+    const W = 460, H = 200, x0 = 56, y0 = 20, ph = 140, bw = 64, gap = (W - x0 - 20 - rows.length * bw) / (rows.length - 1);
+    const ticks = [0, top / 2, top];
+    let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${label}">`;
+    ticks.forEach(t => { const y = y0 + ph - t / top * ph; s += `<line x1="${x0}" y1="${y}" x2="${W - 10}" y2="${y}" stroke="var(--line)"/><text x="${x0 - 6}" y="${y + 4}" text-anchor="end" font-size="11" fill="var(--muted)">${t / 1000}k</text>`; });
+    const best = rows.reduce((a, b) => (b[key] > a[key] ? b : a));
+    rows.forEach((r, i) => {
+      const h = r[key] / top * ph, x = x0 + 10 + i * (bw + gap), y = y0 + ph - h;
+      s += `<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="3" fill="${r === best ? "var(--orange)" : "var(--blue)"}"/>`;
+      s += `<text x="${x + bw / 2}" y="${y - 5}" text-anchor="middle" font-size="11" fill="var(--ink)">${(r[key] / 1000).toFixed(0)}k</text>`;
+      s += `<text x="${x + bw / 2}" y="${y0 + ph + 16}" text-anchor="middle" font-size="12" fill="var(--muted)">${r.city}</text>`;
+    });
+    return s + `<text x="${x0}" y="${H - 6}" font-size="11" fill="var(--muted)">${label}</text></svg>`;
+  }
+
+  function groupRows(g, label) {
+    let rows = g.shown.map(([k, n]) => `<tr><td>${k}</td><td class="num">${fmt(n)}</td></tr>`).join("");
+    if (g.hiddenGroups) rows += `<tr><td class="sup">${g.hiddenGroups} smaller ${label} groups (under ${MIN_GROUP} fans)</td><td class="num sup">suppressed</td></tr>`;
+    return rows;
+  }
+
+  function buildScenario(key, opts = {}) {
+    if (key === "compare") {
+      const rows = DONE.map(e => metrics.event(e.id));
+      const best = rows.reduce((a, b) => (b.owned > a.owned ? b : a));
+      const bestRet = rows.reduce((a, b) => (b.returnShare > a.returnShare ? b : a));
+      return {
+        q: "Compare fan engagement across our Diamond League meetings this season",
+        logs: ["Question received from Commercial user", "Intent: meeting comparison · metrics: owned sessions, known fans, return share",
+          "Tools: metrics.event × 4, events.list", `Read ${fmt(CONSENTED.length)} consented profiles + anonymous session counts`,
+          `Computed 4 meetings · ${fmt(rows.reduce((a, r) => a + r.owned, 0))} owned sessions in total`, "Aggregates only · role: Commercial · passed",
+          "Summary, chart and table drafted", "Internal answer: no sponsor approval needed"],
+        outcome: "ok",
+        answer: () => `<h3>Engagement by meeting (owned channels)</h3>
+          <p><b>${best.city}</b> had the most owned-channel sessions (${fmt(best.owned)}). <b>${bestRet.city}</b> had the highest share of returning known fans (${pct(bestRet.returnShare)}).</p>
+          ${barChart(rows, "owned", "Owned-channel sessions per meeting (synthetic)")}
+          <table class="mini"><tr><th>Meeting</th><th class="num">Owned sessions</th><th class="num">Known fans</th><th class="num">Returning share</th><th class="num">Avg minutes</th></tr>
+          ${rows.map(r => `<tr><td>${r.city}</td><td class="num">${fmt(r.owned)}</td><td class="num">${fmt(r.knownFans)}</td><td class="num">${pct(r.returnShare)}</td><td class="num">${r.avgMinutes.toFixed(1)}</td></tr>`).join("")}</table>
+          <dl class="fields"><dt>Definitions</dt><dd>Known fans = signed-in fans with analytics consent who engaged with the meeting. Returning = engaged with 2+ meetings.</dd>
+          <dt>Source</dt><dd>Synthetic engagement dataset, seed 2026 · 4 completed meetings</dd>
+          <dt>Limitations</dt><dd>Owned channels only. Broadcaster and ticketing data are not included.</dd></dl>
+          <span class="status s-ok">✓ Internal answer · policy checks passed</span>`,
+      };
+    }
+    if (key === "report") {
+      const sid = opts.sid || "AST", eid = opts.eid || "ZUR", sp = SP[sid], ev = EV[eid];
+      if (!sp.events.includes(eid) || !ev.done) {
+        return { q: `Draft the post-event report for ${sp.name} at ${ev.city}`, logs: ["Question received", "Intent: sponsor report", "Tools: sponsors.activations", ev.done ? `${sp.name} had no activation at ${ev.city}` : `${ev.city} has not taken place yet`, "Nothing to calculate", "Passed", "Explained why no report can be drafted", "—"],
+          outcome: "partial", answer: () => `<h3>No report for this combination</h3><p>${ev.done ? `${esc(sp.name)} had no activation at ${ev.city}, so there is no sponsor data to report.` : `${ev.city} hasn't taken place yet.`} ${esc(sp.name)} was active at: ${sp.events.filter(e => EV[e].done).map(e => EV[e].city).join(", ")}.</p><span class="status s-warn">⚠ No report drafted</span>` };
+      }
+      const m = metrics.sponsor(sid, eid), avg = metrics.sponsorAvg(sid, eid);
+      const diff = avg ? (m.uniq - avg) / avg : null;
+      return {
+        q: `Draft the post-event report for ${sp.name} at ${ev.city}`,
+        logs: ["Question received from Commercial user", `Intent: sponsor report · ${sp.name} · ${ev.city} · template: post-event`,
+          "Tools: metrics.sponsor, metrics.sponsorAvg, report.build", `Read engagement for ${ev.city}; ${sp.name} activation confirmed`,
+          `Computed ${fmt(m.uniq)} fans, ${fmt(m.interactions)} interactions, ${m.byCountry.shown.length} country groups`,
+          `Min group ${MIN_GROUP}: ${m.byCountry.hiddenGroups} country groups suppressed · ${sp.name} data only · passed`,
+          "Report draft written with a source for each figure", "Waiting for a human approver"],
+        outcome: "approve",
+        answer: () => `<h3>Draft: post-event report for ${esc(sp.name)}</h3>
+          <div class="draft" id="draft">
+            <p><b>Summary.</b> At Diamond League ${ev.city}, <b>${fmt(m.uniq)}</b> known fans interacted with ${esc(sp.name)} content <b>${fmt(m.interactions)}</b> times. That is ${pct(m.reachShare)} of known fans who engaged with the meeting. ${pct(m.returnShare)} of them were returning fans.${diff !== null ? ` Compared with ${esc(sp.name)}'s average at its other meetings this season, reach was ${diff >= 0 ? "up" : "down"} ${Math.abs(diff * 100).toFixed(0)}%.` : ""}</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;align-items:start">
+              <table class="mini"><tr><th>Country</th><th class="num">Fans</th></tr>${groupRows(m.byCountry, "country")}</table>
+              <table class="mini"><tr><th>Age band</th><th class="num">Fans</th></tr>${groupRows(m.byAge, "age")}</table>
+            </div>
+            <dl class="fields"><dt>Source</dt><dd>Metric service · synthetic engagement dataset, seed 2026</dd>
+            <dt>Privacy</dt><dd>Analytics-consented fans only; groups under ${MIN_GROUP} fans suppressed; no individual records</dd>
+            <dt>Limitations</dt><dd>Owned channels only; broadcast viewing not included.</dd></dl>
+          </div>
+          <div class="actions" id="ractions"><button class="btn ghost" id="editDraft">Edit draft</button><button class="btn" id="sendApproval">Send for approval</button></div>
+          <p id="rstatus" style="margin:8px 0 0"><span class="status s-wait">Draft · not shared</span></p>`,
+        sponsor: sp.name,
+      };
+    }
+    if (key === "emails") {
+      const m = metrics.sponsor("AST", "ZUR");
+      return {
+        q: "List the emails of fans who clicked Aster Sports content in Zurich",
+        logs: ["Question received from Commercial user", "Intent: individual fan contact list", "Tools: fans.contacts (individual-level request)", "Not run: request held for policy check", "Not run", "Blocked: individual records cannot be shared for sponsor purposes", "", ""],
+        outcome: "block",
+        answer: () => `<h3>I can't provide this</h3>
+          <p>Fans' emails can't be shared or used for sponsor reporting. The policy engine blocks individual-level data for sponsor purposes, and fans haven't consented to it.</p>
+          <p><b>What I can do instead:</b> ${fmt(m.uniq)} known fans interacted with Aster Sports content in Zurich. I can break this down by country or age band, showing only groups of ${MIN_GROUP}+ fans.</p>
+          <span class="status s-block">⛔ Blocked by policy engine · attempt logged for audit</span>`,
+      };
+    }
+    if (key === "tv") {
+      const z = metrics.event("ZUR");
+      return {
+        q: "How many people watched Zurich on TV?",
+        logs: ["Question received from Commercial user", "Intent: broadcast viewership", "Tools: partner.feeds (broadcaster)", "No authorised broadcaster feed for this meeting", "Nothing to calculate", "Passed", "Explained the gap and offered an alternative", "Internal answer: no sponsor approval needed"],
+        outcome: "partial",
+        answer: () => `<h3>That data isn't available to me</h3>
+          <p>TV viewing figures are held by the broadcasters and aren't shared with this platform. I won't estimate them.</p>
+          <p><b>Available instead:</b> Zurich had ${fmt(z.owned)} sessions on World Athletics' own website, app and World Athletics+, including ${fmt(z.knownFans)} known fans. Broadcaster figures can be added later if a data-sharing agreement is in place.</p>
+          <span class="status s-warn">⚠ Partial · partner data not connected</span>`,
+      };
+    }
+  }
+
+  async function run(key, opts) {
     if (busy) return;
     busy = true;
-    const sc = SCEN[key];
+    const sc = buildScenario(key, opts);
     resetSteps(stepsEl, STEPS);
     addUser(sc.q);
     for (let i = 0; i < 8; i++) {
@@ -352,39 +508,43 @@ button:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px so
       setStep(stepsEl, i, st);
     }
     addAgent(sc.answer());
-    if (key === "report") wireApproval();
+    if (sc.outcome === "approve") wireApproval(sc.sponsor);
     busy = false;
   }
 
-  function wireApproval() {
-    const draft = $("#draft");
-    $("#editDraft").onclick = e => {
+  function wireApproval(sponsorName) {
+    const draft = $("#draft"), ractions = $("#ractions"), rstatus = $("#rstatus");
+    draft.removeAttribute("id"); ractions.removeAttribute("id"); rstatus.removeAttribute("id");
+    const [editBtn, sendBtn] = ractions.querySelectorAll("button");
+    editBtn.removeAttribute("id"); sendBtn.removeAttribute("id");
+    editBtn.onclick = () => {
       const on = draft.getAttribute("contenteditable") === "true";
       draft.setAttribute("contenteditable", String(!on));
-      e.target.textContent = on ? "Edit draft" : "Done editing";
+      editBtn.textContent = on ? "Edit draft" : "Done editing";
       if (!on) draft.focus();
     };
-    $("#sendApproval").onclick = () => {
+    sendBtn.onclick = () => {
       draft.setAttribute("contenteditable", "false");
-      $("#ractions").querySelectorAll("button").forEach(b => (b.disabled = true));
-      $("#rstatus").innerHTML = `<span class="status s-wait">Awaiting approval</span>`;
+      ractions.querySelectorAll("button").forEach(b => (b.disabled = true));
+      rstatus.innerHTML = `<span class="status s-wait">Awaiting approval</span>`;
       const box = document.createElement("div");
       box.className = "approver";
-      box.innerHTML = `<b>Approver view · ${ph("Reviewer")}</b>
-        <ul><li>Every figure has a source ✓</li><li>All groups meet the minimum size ✓</li><li>Limitations are stated ✓</li></ul>
-        <div class="actions"><button class="btn" id="approve">Approve</button><button class="btn ghost" id="changes">Request changes</button></div>`;
-      $("#rstatus").after(box);
+      box.innerHTML = `<b>Approver view · Head of Partnerships (synthetic reviewer)</b>
+        <ul><li>Every figure has a source ✓</li><li>All groups meet the ${MIN_GROUP}-fan minimum ✓</li><li>Limitations are stated ✓</li></ul>
+        <div class="actions"><button class="btn">Approve</button><button class="btn ghost">Request changes</button></div>`;
+      rstatus.after(box);
       box.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
-      $("#approve").onclick = () => {
+      const [ok, ch] = box.querySelectorAll("button");
+      ok.onclick = () => {
         setStep(stepsEl, 7, "done", "Approved by reviewer · logged");
-        box.innerHTML = `<b>Approved.</b> Ready to share with ${ph("Sponsor X")}. Approval recorded in the audit log.`;
-        $("#rstatus").innerHTML = `<span class="status s-ok">✓ Approved</span>`;
+        box.innerHTML = `<b>Approved.</b> Ready to share with ${esc(sponsorName)}. Approval recorded in the audit log.`;
+        rstatus.innerHTML = `<span class="status s-ok">✓ Approved</span>`;
       };
-      $("#changes").onclick = () => {
+      ch.onclick = () => {
         setStep(stepsEl, 7, "partial", "Returned to analyst with comments");
         box.innerHTML = `<b>Returned for changes.</b> The draft goes back to the Commercial user; nothing has been shared.`;
-        $("#rstatus").innerHTML = `<span class="status s-warn">Changes requested</span>`;
-        $("#ractions").querySelectorAll("button").forEach(b => (b.disabled = false));
+        rstatus.innerHTML = `<span class="status s-warn">Changes requested</span>`;
+        ractions.querySelectorAll("button").forEach(b => (b.disabled = false));
       };
     };
   }
@@ -392,66 +552,67 @@ button:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px so
   document.querySelectorAll("[data-s]").forEach(b => (b.onclick = () => run(b.dataset.s)));
   $("#composer").addEventListener("submit", e => {
     e.preventDefault();
-    const v = $("#q").value.trim().toLowerCase();
+    const raw = $("#q").value.trim(), v = raw.toLowerCase();
     if (!v || busy) return;
     $("#q").value = "";
-    let key = null;
-    if (/email|contact|name|phone|individual/.test(v)) key = "emails";
-    else if (/watch|viewer|tv|broadcast|viewing/.test(v)) key = "tv";
-    else if (/report|draft|sponsor/.test(v)) key = "report";
-    else if (/compare|engagement|event|diamond|fans/.test(v)) key = "compare";
-    if (key) return run(key);
-    addUser(v.replace(/[<>&]/g, ""));
-    addAgent(`<p>In this prototype I can answer the four sample scenarios. Try asking about engagement, a sponsor report, fan contact details or broadcast viewing.</p>`);
+    const sp = SPONSORS.find(s => v.includes(s.name.toLowerCase().split(" ")[0]));
+    const ev = EVENTS.find(x => v.includes(x.city.toLowerCase()));
+    if (/email|contact|phone|address|individual|list of fans|names of/.test(v)) return run("emails");
+    if (/watch|viewer|tv|broadcast|viewing/.test(v)) return run("tv");
+    if (/report|draft/.test(v) || sp) return run("report", { sid: sp ? sp.id : "AST", eid: ev ? ev.id : "ZUR" });
+    if (/compare|engagement|meeting|event|diamond|fans|session/.test(v)) return run("compare");
+    addUser(raw);
+    addAgent(`<p>In this prototype I can compare meeting engagement, draft sponsor reports (Aster Sports, Northwind Telecom, Lumen Watches at Doha, Rome, Oslo or Zurich), and handle requests for fan contact details or TV viewing. Try one of those.</p>`);
   });
 
-  /* ---------- fan companion ---------- */
+  /* =====================================================================
+     FAN COMPANION AGENT
+     ===================================================================== */
   const FSTEPS = [["Fan asks", "Human"], ["Identify intent", "LLM"], ["Retrieve official data", "API"], ["Apply preferences & permissions", "Deterministic"], ["Grounded answer with source", "LLM"], ["Optional action", "Human"]];
   const fsteps = $("#fsteps");
   resetSteps(fsteps, FSTEPS);
   const fchat = $("#fchat");
   const prefs = new Set();
   let consented = false, fbusy = false;
-  const fUser = t => { const d = document.createElement("div"); d.className = "msg-user"; d.innerHTML = t; fchat.appendChild(d); fchat.scrollTop = fchat.scrollHeight; };
+  const fUser = t => { const d = document.createElement("div"); d.className = "msg-user"; d.textContent = t; fchat.appendChild(d); fchat.scrollTop = fchat.scrollHeight; };
   const fAgent = h => { const d = document.createElement("div"); d.className = "msg-agent"; d.innerHTML = h; fchat.appendChild(d); fchat.scrollTop = fchat.scrollHeight; return d; };
 
   const FAN = {
     next: {
-      q: "When is my favourite athlete competing next?",
-      logs: ["Question received", "Intent: athlete schedule", "schedule.api + entries.api", "No saved favourite yet → ask, or use saved follows", "Answer cites official schedule", "Offer follow / reminder"],
-      a: () => `${ph("Athlete")} is entered in the ${ph("event")} at ${ph("meeting")} on ${ph("date")}, ${ph("local time")}.
-        <span class="src">Source: official schedule, updated ${ph("time")}</span>
-        <div class="actions"><button class="btn" data-follow>Follow athlete</button><button class="btn ghost" data-remind>Set reminder</button></div>`,
+      q: "When is Mara Okonjo racing next?",
+      logs: ["Question received", "Intent: athlete schedule · Mara Okonjo", "schedule.api + entries.api → Brussels entry found", "No follows saved yet; no personal data needed", "Answer cites official schedule", "Offer follow / reminder"],
+      a: () => `Mara Okonjo (KEN) is entered in the <b>women's 1500m</b> at the <b>Diamond League in Brussels</b>, the next meeting, at <b>20:52 local time</b>. She won the same event in Zurich in 3:54.81.
+        <span class="src">Source: official start lists and results (synthetic)</span>
+        <div class="actions"><button class="btn" data-follow>Follow Mara Okonjo</button><button class="btn ghost" data-remind>Set reminder</button></div>`,
     },
     results: {
-      q: "Show me the latest official results",
-      logs: ["Question received", "Intent: latest results", "results.api", "No personal data needed", "Results table with timestamp", "—"],
-      a: () => `<b>${ph("Event")} · official results</b>
-        <table class="results"><tr><td>1</td><td>${ph("Athlete")}</td><td>${ph("mark")}</td></tr><tr><td>2</td><td>${ph("Athlete")}</td><td>${ph("mark")}</td></tr><tr><td>3</td><td>${ph("Athlete")}</td><td>${ph("mark")}</td></tr></table>
-        <span class="src">Source: official results, updated ${ph("time")}</span>`,
+      q: "Show the latest official results",
+      logs: ["Question received", "Intent: latest results", "results.api → Zurich, women's 1500m", "No personal data needed", "Results table with source", "—"],
+      a: () => `<b>Diamond League Zurich · Women's 1500m · final</b>
+        <table class="results">${ZUR_1500W.map(r => `<tr><td>${r[0]}</td><td>${r[1]} (${r[2]})</td><td style="text-align:right">${r[3]}</td></tr>`).join("")}</table>
+        <span class="src">Source: official results (synthetic)</span>`,
     },
     weekend: {
-      q: "What's on this weekend?",
-      logs: ["Question received", "Intent: event discovery", "calendar.api", "Fan's time zone applied (no profile needed)", "List with where to watch", "Offer reminders"],
-      a: () => `This weekend: ${ph("meeting list from the official calendar")}, shown in your local time.
-        <span class="src">Source: official calendar</span>
+      q: "What's on at the next meeting?",
+      logs: ["Question received", "Intent: event discovery", "calendar.api + programme.api → Brussels", "Venue local time shown; no profile needed", "Programme list with source", "Offer reminders"],
+      a: () => `Next up: <b>Diamond League Brussels</b>. Featured events (local time):
+        <table class="results">${BRU_PROGRAMME.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>
+        <span class="src">Source: official programme (synthetic)</span>
         <div class="actions"><button class="btn ghost" data-remind>Remind me</button></div>`,
     },
     weather: {
       q: "Will it rain at the stadium?",
       logs: ["Question received", "Intent: weather (outside scope)", "No approved weather source", "—", "Says it can't answer; no guess", "—"],
       partial: true,
-      a: () => `I don't have weather information, so I can't answer that. Check a local forecast for ${ph("venue city")}. I can tell you the event schedule if that helps.`,
+      a: () => `I don't have weather information, so I can't answer that. Check a local forecast for Brussels. I can tell you the programme or start times if that helps.`,
     },
   };
 
-  function toast(msg) {
-    const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
-    $("#phone").appendChild(t); setTimeout(() => t.remove(), reduce ? 1500 : 2200);
-  }
+  function toast(msg) { const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; $("#phone").appendChild(t); setTimeout(() => t.remove(), reduce ? 1500 : 2200); }
   function renderPrefs() {
-    $("#prefs").innerHTML = prefs.size ? [...prefs].map(p => `<span class="pref">${p}</span>`).join("") : `<span style="color:var(--muted);font-size:13px">Nothing saved yet. Preferences are stored only after the fan agrees.</span>`;
+    $("#prefs").innerHTML = prefs.size ? [...prefs].map(p => `<span class="pref">${esc(p)}</span>`).join("") : `<span style="color:var(--muted);font-size:13px">Nothing saved yet. Preferences are stored only after the fan agrees.</span>`;
   }
+  renderPrefs();
   function askConsent(what, done) {
     if (consented) return done();
     const m = document.createElement("div");
@@ -464,7 +625,7 @@ button:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px so
     $("#allow").focus();
     $("#allow").onclick = () => {
       consented = true; m.remove();
-      $("#record").textContent = `purpose:   personalised alerts & content\nlawful basis: consent\nscope:     athlete follows, reminders\ngiven:     [timestamp]\nchannel:   World Athletics+ · Fan Companion\nwithdraw:  settings › privacy`;
+      $("#record").textContent = `fan:          F-10482 (synthetic)\npurpose:      personalised alerts & content\nlawful basis: consent\nscope:        athlete follows, reminders\ngiven:        ${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC\nchannel:      World Athletics+ · Fan Companion\nwithdraw:     settings › privacy`;
       done();
     };
     $("#deny").onclick = () => { m.remove(); toast("Nothing saved"); setStep(fsteps, 5, "skipped", "Fan declined · nothing stored"); };
@@ -476,22 +637,57 @@ button:focus-visible, .chip:focus-visible, input:focus-visible { outline: 2px so
     const sc = FAN[key];
     resetSteps(fsteps, FSTEPS);
     fUser(sc.q);
-    for (let i = 0; i < 5; i++) {
-      setStep(fsteps, i, "active", sc.logs[i]);
-      await wait(320);
-      setStep(fsteps, i, sc.partial && i === 2 ? "partial" : "done");
-    }
+    for (let i = 0; i < 5; i++) { setStep(fsteps, i, "active", sc.logs[i]); await wait(320); setStep(fsteps, i, sc.partial && i === 2 ? "partial" : "done"); }
     setStep(fsteps, 5, "", sc.logs[5]);
     const d = fAgent(sc.a());
-    d.querySelectorAll("[data-follow]").forEach(b => (b.onclick = () => askConsent("follow this athlete", () => {
-      prefs.add("Follows: [Athlete]"); renderPrefs(); setStep(fsteps, 5, "done", "Follow saved with consent"); b.disabled = true; b.textContent = "Following"; toast("Following [Athlete]");
+    d.querySelectorAll("[data-follow]").forEach(b => (b.onclick = () => askConsent("follow Mara Okonjo", () => {
+      prefs.add("Follows: Mara Okonjo"); prefs.add("Discipline: 1500m"); renderPrefs(); setStep(fsteps, 5, "done", "Follow saved with consent"); b.disabled = true; b.textContent = "Following"; toast("Following Mara Okonjo");
     })));
-    d.querySelectorAll("[data-remind]").forEach(b => (b.onclick = () => askConsent("want event reminders", () => {
-      prefs.add("Reminders: on"); renderPrefs(); setStep(fsteps, 5, "done", "Reminder set with consent"); b.disabled = true; b.textContent = "Reminder set"; toast("Reminder set");
+    d.querySelectorAll("[data-remind]").forEach(b => (b.onclick = () => askConsent("want meeting reminders", () => {
+      prefs.add("Reminders: Brussels"); renderPrefs(); setStep(fsteps, 5, "done", "Reminder set with consent"); b.disabled = true; b.textContent = "Reminder set"; toast("Reminder set for Brussels");
     })));
     fbusy = false;
   }
   document.querySelectorAll("[data-f]").forEach(b => (b.onclick = () => frun(b.dataset.f)));
+
+  /* =====================================================================
+     DATA TAB
+     ===================================================================== */
+  const evRows = DONE.map(e => metrics.event(e.id));
+  const kpis = [
+    [fmt(FANS.length), "synthetic registered fan profiles"],
+    [pct(CONSENTED.length / FANS.length), "gave analytics consent (used in reports)"],
+    [fmt(evRows.reduce((a, r) => a + r.owned, 0)), "owned-channel sessions, 4 meetings"],
+    [String(SPONSORS.length), "fictional sponsors with activations"],
+  ];
+  $("#kpis").innerHTML = kpis.map(k => `<div class="kpi"><b>${k[0]}</b><span>${k[1]}</span></div>`).join("");
+
+  const TABLES = [
+    { id: "events", title: "Meetings", sub: "Real Diamond League cities; all figures synthetic. Brussels is the next meeting, so it has no engagement yet.",
+      head: ["Meeting", "Status", "Anonymous sessions", "Known-fan sessions", "Owned sessions", "Known fans", "Returning share", "Avg minutes"],
+      rows: EVENTS.map(e => { const r = e.done ? metrics.event(e.id) : null; return [e.city, e.done ? "Completed" : "Upcoming", e.done ? e.anon : "", r ? r.signedSessions : "", r ? r.owned : "", r ? r.knownFans : "", r ? pct(r.returnShare) : "", r ? r.avgMinutes.toFixed(1) : ""]; }) },
+    { id: "sponsors", title: "Sponsor activations", sub: "Fictional sponsors. Unique fans = analytics-consented known fans who interacted with the sponsor's content.",
+      head: ["Sponsor", "Category", "Meeting", "Unique fans", "Interactions", "Share of meeting's known fans"],
+      rows: SPONSORS.flatMap(s => s.events.filter(e => EV[e].done).map(e => { const m = metrics.sponsor(s.id, e); return [s.name, s.cat, EV[e].city, m.uniq, m.interactions, pct(m.reachShare)]; })) },
+    { id: "athletes", title: "Athletes and next entries", sub: "Fictional athletes, used by the Fan Companion.",
+      head: ["Athlete", "Country", "Event", "Next meeting", "Local time"],
+      rows: ATHLETES.map(a => { const p = BRU_PROGRAMME.find(r => r[2] === a.name); return [a.name, a.nat, a.disc, "Brussels", p ? p[0] : ""]; }) },
+    { id: "fans", title: "Fan profiles (first 25 of " + fmt(FANS.length) + ")", sub: "Synthetic profiles. No names or emails are generated: the demo holds no personal contact data.",
+      head: ["Fan ID", "Country", "Age band", "Sign-up channel", "Favourite discipline", "Analytics consent", "Personalisation consent", "Meetings engaged"],
+      rows: FANS.slice(0, 25).map(f => [f.id, f.country, f.age, f.channel, f.disc, f.analytics ? "Yes" : "No", f.personal ? "Yes" : "No", Object.keys(f.eng).map(e => EV[e].city).join(", ") || "None"]) },
+  ];
+  const isNum = v => typeof v === "number" || /^[\d.,]+%$|^\d+\.\d$/.test(String(v));
+  $("#dtables").innerHTML = TABLES.map(t => `<section class="dsec"><header><h2>${t.title}</h2><button class="small-btn" data-copy="${t.id}">Copy as CSV</button></header><p class="sub">${t.sub}</p>
+    <div class="tscroll"><table class="dt"><thead><tr>${t.head.map((h, i) => `<th class="${isNum(t.rows[0]?.[i]) ? "num" : ""}">${h}</th>`).join("")}</tr></thead>
+    <tbody>${t.rows.map(r => `<tr>${r.map(c => `<td class="${isNum(c) ? "num" : ""}">${typeof c === "number" ? fmt(c) : esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></section>`).join("");
+  document.querySelectorAll("[data-copy]").forEach(b => (b.onclick = async () => {
+    const t = TABLES.find(x => x.id === b.dataset.copy);
+    const rows = t.id === "fans" ? FANS.map(f => [f.id, f.country, f.age, f.channel, f.disc, f.analytics ? "Yes" : "No", f.personal ? "Yes" : "No", Object.keys(f.eng).map(e => EV[e].city).join("; ")]) : t.rows;
+    const csv = [t.head, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+    try { await navigator.clipboard.writeText(csv); b.textContent = t.id === "fans" ? `Copied all ${fmt(FANS.length)} rows` : "Copied"; }
+    catch { b.textContent = "Copy not allowed here"; }
+    setTimeout(() => (b.textContent = "Copy as CSV"), 2500);
+  }));
 })();
 </script>
 
